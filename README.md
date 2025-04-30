@@ -77,6 +77,9 @@ docker-compose up -d
 | GET /api/tickets| Получить список всех билетов пользователя [пример команды](#get-user-tickets)
 | GET /api/tickets/{id}| Получить информацию о билете пользователя по id [пример команды](#get-ticket-detail)
 | GET /api/tickets/{id}/check-result| Проверка результата билета пользователя по id [пример команды](#get-ticket-result)
+| POST /api/invoice| Создать инвойс [пример команды](#post-create-invoice)
+| POST /api/payments| Оплатить покупку билета [пример команды](#post-buy-ticket)
+| POST /api/exports/winnings| Начислить выигрыш (доступна роли ADMIN) [пример команды](#post-credit-winnings)
 ||
 ||
 
@@ -248,3 +251,103 @@ curl -X GET http://localhost:8080/api/tickets/3/check-result -H "Authorization: 
 Dload  Upload   Total   Spent    Left  Speed
 100    69    0    69    0     0   3125      0 --:--:-- --:--:-- --:--:--  3136{"id":3,"userId":4,"drawId":2,"data":"45 88 82 16 18","status":"WIN"}
 ```
+<br/><br/>
+
+<h3 id="post-create-invoice">Создание инвойса</h3>
+
+**REQUEST**
+```bash
+curl -X POST \
+  "http://localhost:8080/api/invoice" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJib2xkbWFuQG1haWwucnUiLCJpYXQiOjE3NDYwMjY4NjEsImV4cCI6MTc0NjAzMDQ2MX0.3mWMSgKkFcYcmN_EaqWpwPywU2Ws_gvhKNMhifwtJschj3nMsqjOj07IroJLtO1FGR1ys0_t263i8K34LkeNqg" \
+  -d '{
+    "ticketData": {
+	     "userId": 4,
+      "drawId": 3,
+      "numbers": "45 43 21 8 18"
+    }
+  }'
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100   243    0   144  100    99   4452   3061 --:--:-- --:--:-- --:--:--  7593{"id":5,"ticketData":"{\"userId\":4,\"drawId\":3,\"numbers\":\"45 43 21 8 18\"}","registerTime":"2025-04-30T18:38:07.917201","status":"PENDING"}
+```
+<br/><br/>
+
+<h3 id="post-buy-ticket">Покупка билета</h3>
+
+**REQUEST**
+```bash
+curl -X POST \
+  "http://localhost:8080/api/payments" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJib2xkbWFuQG1haWwucnUiLCJpYXQiOjE3NDYwMjY4NjEsImV4cCI6MTc0NjAzMDQ2MX0.3mWMSgKkFcYcmN_EaqWpwPywU2Ws_gvhKNMhifwtJschj3nMsqjOj07IroJLtO1FGR1ys0_t263i8K34LkeNqg" \
+  -d '{
+    "invoiceId": 5,
+    "cardNumber": "4276450011113411",
+        "cvc": "123",
+    "amount": 123.25
+    }'
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100   344    0   243  100   101   3583   1489 --:--:-- --:--:-- --:--:--  5134{"id":4,"amount":123.25,"status":"SUCCESS","paymentTime":"2025-04-30T18:50:01.661327","invoice":{"id":5,"ticketData":"{\"userId\":4,\"drawId\":3,\"numbers\":\"45 43 21 8 18\"}","registerTime":"2025-04-30T18:38:07.917201","status":"COMPLETED"}}
+```
+<h3 id="post-credit-winnings">Выплата выигрыша</h3>
+
+**REQUEST**
+```bash
+curl -X POST \
+  "http://localhost:8080/api/exports/winnings" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzQ2MDAyMTczLCJleHAiOjE3NDYwMDU3NzN9.R9b_CWkL7Mnh-YBE_524a7B1-HqaiMQevfZV-Z1suTaFyV74jiNKLB54F1Yb-pNfWXidRvdl7mYRBF31xBHeTQ" \
+  -d '{
+    "drawId": 1,
+    "winningAmount": 3000
+    }'
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    69    0    69    0     0   3125      0 --:--:-- --:--:-- --:--:--  3136{"id":3,"userId":4,"drawId":2,"data":"45 88 82 16 18","status":"WIN"}
+```
+<br/><br/>
+
+<h3 id="get-ticket-result">Проверка результата билета пользователя</h3>
+
+**REQUEST**
+```bash
+curl -X GET http://localhost:8080/api/tickets/3/check-result -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJib2xkbWFuQG1haWwucnUiLCJpYXQiOjE3NDYwMjI5OTksImV4cCI6MTc0NjAyNjU5OX0.iltIEGZj1-EARHiMKBzDtR65n9yTTVoNCeFFrZPaLLYXlWCv0kVXdkgy0SMNz3VuNVt_vDXO4o5NfAibmQToZw"
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    69    0    69    0     0   3125      0 --:--:-- --:--:-- --:--:--  3136{"id":3,"userId":4,"drawId":2,"data":"45 88 82 16 18","status":"WIN"}
+```
+<br/><br/>
+
+<h3 id="get-ticket-result">Проверка результата билета пользователя</h3>
+
+**REQUEST**
+```bash
+curl -X GET http://localhost:8080/api/tickets/3/check-result -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJib2xkbWFuQG1haWwucnUiLCJpYXQiOjE3NDYwMjI5OTksImV4cCI6MTc0NjAyNjU5OX0.iltIEGZj1-EARHiMKBzDtR65n9yTTVoNCeFFrZPaLLYXlWCv0kVXdkgy0SMNz3VuNVt_vDXO4o5NfAibmQToZw"
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    69    0    69    0     0   3125      0 --:--:-- --:--:-- --:--:--  3136{"id":3,"userId":4,"drawId":2,"data":"45 88 82 16 18","status":"WIN"}
+```
+<br/><br/>
