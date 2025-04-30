@@ -1,5 +1,5 @@
 
-<h1 align="center" style="font-weight: bold;">Учебная задача. Разработка Лотерейной системы. 💻</h1>
+<h1 align="center" style="font-weight: bold;">Сервис лотерейных тиражей 💻</h1>
 
 <p align="center">
 <a href="#tech">Технологии</a>
@@ -17,9 +17,10 @@
 - Java 17 
 - Spring Boot 3.x (Spring Web, Spring Data JPA, Spring Security)
 - PostgreSQL
-- JWT authorisation
-- Система логирования
-- mock-Email service
+- Аутентификация с использованием JWT-токена.
+- Система логирования slf4j + logback
+- Mock SMTP-сервис для эмуляции отправки почтовых писем
+- Docker
 
 
 <h3>Требования к системе</h3>
@@ -54,7 +55,7 @@ environment:
 ./gradlew clean bootJar
 ```
 
-4. После завершения сборки запустить докер-контейнер командой:
+4. После завершения сборки запустить связку докер-контейнеров командой:
 
 ```bash
 docker-compose up -d
@@ -66,17 +67,21 @@ docker-compose up -d
 ​
 |                API              |                                 Описание
 |:----------------------:|:-----------------------------------------------------:|
-| POST /auth/register     | Создать пользователя (группа - Admin или User) [пример команды](#post-registration)
-| POST /auth/login    | Авторизировать пользователя в системе и выдать JWT токен [пример команды](#post-auth-detail)
-| POST /api/draws/admin     | Создать тираж лотерии (доступна группе Admin) [пример команды](#post-create-draw)
+| POST /auth/register     | Создать пользователя с ролью USER или ADMIN [пример команды](#post-registration)
+| POST /auth/login    | Аутентификация пользователя в системе (выдача токена для доступа) [пример команды](#post-auth-detail)
+| POST /api/draws/admin     | Создать тираж лотерии (доступна роли ADMIN) [пример команды](#post-create-draw)
 | GET /api/draws/active     | Получить список активных тиражей лотереи [пример команды](#get-active-draw)
-| PUT /api/draws/{Id}/cancel/admin     | Отменить тираж лотереи по Id (доступна группе Admin) [пример команды](#put-cancel-draw)
-\
-\
-\
-<br/><br/>
+| PUT /api/draws/{id}/cancel/admin     | Отменить тираж лотереи по id (доступна роли ADMIN) [пример команды](#put-cancel-draw)
+| GET /api/draws/completed | Получить список завершённых тиражей лотереи [пример команды](#get-complete-draw)
+| GET /api/draws/{id}/results | Получить выигрышную комбинацию тиража лотереи по id [пример команды](#get-winningcombination-draw)
+| GET /api/tickets| Получить список всех билетов пользователя [пример команды](#get-user-tickets)
+| GET /api/tickets/{id}| Получить информацию о билете пользователя по id [пример команды](#get-ticket-detail)
+| GET /api/tickets/{id}/check-result| Проверка результата билета пользователя по id [пример команды](#get-ticket-result)
+||
+||
 
-<h3 id="post-registration">POST /register</h3>
+
+<h3 id="post-registration">Создание пользователя с ролью ADMIN или USER</h3>
 
 **REQUEST**
 ```bash
@@ -98,7 +103,7 @@ Dload  Upload   Total   Spent    Left  Speed
 ```
 <br/><br/>
 
-<h3 id="post-auth-detail">POST /auth/login</h3>
+<h3 id="post-auth-detail">Аутентификация пользователя в системе</h3>
 
 **REQUEST**
 ```bash
@@ -118,7 +123,7 @@ Dload  Upload   Total   Spent    Left  Speed
 ```
 <br/><br/>
 
-<h3 id="post-create-draw">POST /api/draws/admin</h3>
+<h3 id="post-create-draw">Создание тиража лотереи</h3>
 
 **REQUEST**
 ```bash
@@ -140,7 +145,7 @@ Dload  Upload   Total   Spent    Left  Speed
 ```
 \
 \
-<h3 id="get-active-draw">GET /api/draws/active</h3>
+<h3 id="get-active-draw">Получение списка активных тиражей лотереи</h3>
 
 **REQUEST**
 ```bash
@@ -155,7 +160,7 @@ Dload  Upload   Total   Spent    Left  Speed
 ```
 <br/><br/>
 
-<h3 id="put-cancel-draw">PUT /api/draws/{Id}/cancel/admin</h3>
+<h3 id="put-cancel-draw">Отмена тиража лотереи</h3>
 
 **REQUEST**
 ```bash
@@ -167,4 +172,79 @@ curl -X PUT "http://localhost:8080/api/draws/1/cancel/admin"   -H "Authorization
 % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 Dload  Upload   Total   Spent    Left  Speed
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+```
+<br/><br/>
+
+<h3 id="get-complete-draw">Получение списока завершённых тиражей лотереи</h3>
+
+**REQUEST**
+```bash
+curl -X GET "http://localhost:8080/api/draws/completed"
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100   121    0   121    0     0  12291      0 --:--:-- --:--:-- --:--:-- 13444[{"id":2,"lotteryType":"AUTO","startTime":"2025-04-29T16:10:00","finishTime":"2025-04-30T09:05:00","status":"COMPLETED"}]
+```
+<br/><br/>
+
+<h3 id="get-winningcombination-draw">Получение выигрышной комбинации тиража лотереи</h3>
+
+**REQUEST**
+```bash
+curl -X GET "http://localhost:8080/api/draws/1/results"
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    39    0    39    0     0   2060      0 --:--:-- --:--:-- --:--:--  2166{"winningCombination":"45 88 82 16 18"}
+```
+<br/><br/>
+
+<h3 id="get-user-tickets">Получние списока всех билетов пользователя</h3>
+
+**REQUEST**
+```bash
+curl -X GET http://localhost:8080/api/tickets -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0dXNlciIsImlhdCI6MTc0NTk1NjE5MSwiZXhwIjoxNzQ1OTU5NzkxfQ.82dQQadhIXuxVQaQaY8Q_6on2DwMvdVVUGh0SdzoM-aDgxsti3dFGUZuu2hGDk4Dukc8N5GpBgZhhj7Dje7NWg"
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100   148    0   148    0     0   5610      0 --:--:-- --:--:-- --:--:--  5692[{"id":1,"userId":2,"drawId":1,"data":"9 13 27 45 85","status":"PENDING"},{"id":2,"userId":2,"drawId":2,"data":"58 61 74 75 86","status":"PENDING"}]
+```
+<br/><br/>
+
+<h3 id="get-ticket-detail">Получение информацию о билете пользователя</h3>
+
+**REQUEST**
+```bash
+curl -X GET http://localhost:8080/api/tickets/3 -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJib2xkbWFuQG1haWwucnUiLCJpYXQiOjE3NDYwMjI5OTksImV4cCI6MTc0NjAyNjU5OX0.iltIEGZj1-EARHiMKBzDtR65n9yTTVoNCeFFrZPaLLYXlWCv0kVXdkgy0SMNz3VuNVt_vDXO4o5NfAibmQToZw"
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    69    0    69    0     0   2023      0 --:--:-- --:--:-- --:--:--  2029{"id":3,"userId":4,"drawId":2,"data":"45 88 82 16 18","status":"WIN"}
+```
+<br/><br/>
+
+<h3 id="get-ticket-result">Проверка результата билета пользователя</h3>
+
+**REQUEST**
+```bash
+curl -X GET http://localhost:8080/api/tickets/3/check-result -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJib2xkbWFuQG1haWwucnUiLCJpYXQiOjE3NDYwMjI5OTksImV4cCI6MTc0NjAyNjU5OX0.iltIEGZj1-EARHiMKBzDtR65n9yTTVoNCeFFrZPaLLYXlWCv0kVXdkgy0SMNz3VuNVt_vDXO4o5NfAibmQToZw"
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    69    0    69    0     0   3125      0 --:--:-- --:--:-- --:--:--  3136{"id":3,"userId":4,"drawId":2,"data":"45 88 82 16 18","status":"WIN"}
 ```
