@@ -74,6 +74,8 @@ docker-compose up -d
 \
 \
 \
+<br/><br/>
+
 <h3 id="post-registration">POST /register</h3>
 
 **REQUEST**
@@ -94,8 +96,8 @@ curl -X POST http://localhost:8080/auth/register \
 Dload  Upload   Total   Spent    Left  Speed
 100   181    0    68  100   113    102    170 --:--:-- --:--:-- --:--:--   273{"id":1,"login":"administrator","fullName":"Admin A","role":"ADMIN"}
 ```
-\
-\
+<br/><br/>
+
 <h3 id="post-auth-detail">POST /auth/login</h3>
 
 **REQUEST**
@@ -114,8 +116,8 @@ Dload  Upload   Total   Spent    Left  Speed
 Dload  Upload   Total   Spent    Left  Speed
 100   261    0   196  100    65   1625    539 --:--:-- --:--:-- --:--:--  2175{"token":"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzQ1OTMxNjgxLCJleHAiOjE3NDU5MzUyODF9.VgrYLaaHYQK76vDTsF7MAqYM2qatesM5nluL5Gk_72uWjiF5MXuv92yrcOIIfQLeugobQZ-NdEFTO2AhL6g6wQ"}
 ```
-\
-\
+<br/><br/>
+
 <h3 id="post-create-draw">POST /api/draws/admin</h3>
 
 **REQUEST**
@@ -151,8 +153,8 @@ curl -X GET "http://localhost:8080/api/draws/active"
 Dload  Upload   Total   Spent    Left  Speed
 100   118    0   118    0     0   4614      0 --:--:-- --:--:-- --:--:--  4538[{"id":1,"lotteryType":"AUTO","startTime":"2025-04-29T16:05:00","finishTime":"2025-05-01T20:00:00","status":"ACTIVE"}]
 ```
-\
-\
+<br/><br/>
+
 <h3 id="put-cancel-draw">PUT /api/draws/{Id}/cancel/admin</h3>
 
 **REQUEST**
