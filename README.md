@@ -2,8 +2,8 @@
 <h1 align="center" style="font-weight: bold;">Учебная задача. Разработка Лотерейной системы. 💻</h1>
 
 <p align="center">
-<a href="#tech">Technologies</a>
-<a href="#started">Getting Started</a>
+<a href="#tech">Технологии</a>
+<a href="#started">Настойка</a>
 <a href="#routes">API Endpoints</a>
  
 </p>
@@ -11,7 +11,7 @@
 
 <p align="center">Создание системы для проведения лотерейных тиражей с возможностью покупки билетов, определения выигрышей и интеграции с платежными системами.</p>
 
-<h2 id="#tech">💻 Technologies</h2>
+<h2 id="#tech">💻 Технологии</h2>
 
 Для реализации проекта использовались:
 - Java 17 
@@ -61,10 +61,15 @@ docker-compose up -d
 |                API              |                                 Описание
 |:----------------------:|:-----------------------------------------------------:|
 | POST /auth/register     | Создать пользователя (группа - Admin или User) [пример команды](#post-registration)
-| <kbd>POST /auth/login</kbd>     | Авторизировать пользователя в системе и выдать JWT токен [пример команды](#post-auth-detail)
-| <kbd>POST /api/draws/admin</kbd>     | Создать тираж лотерии (доступна группе Admin) [пример команды](#post-create-draw)
-| <kbd>GET /api/draws/active</kbd>     | Получить список активных тиражей лотереи [пример команды](#get-active-draw)
-| <kbd>PUT /api/draws/{Id}/cancel/admin</kbd>     | Отменить тираж лотереи по Id (доступна группе Admin) [пример команды](#put-cancel-draw)
+|:----------------------:|:-----------------------------------------------------:|
+| POST /auth/login    | Авторизировать пользователя в системе и выдать JWT токен [пример команды](#post-auth-detail)
+|:----------------------:|:-----------------------------------------------------:|
+| POST /api/draws/admin     | Создать тираж лотерии (доступна группе Admin) [пример команды](#post-create-draw)
+|:----------------------:|:-----------------------------------------------------:|
+| GET /api/draws/active     | Получить список активных тиражей лотереи [пример команды](#get-active-draw)
+|:----------------------:|:-----------------------------------------------------:|
+| PUT /api/draws/{Id}/cancel/admin     | Отменить тираж лотереи по Id (доступна группе Admin) [пример команды](#put-cancel-draw)
+|:----------------------:|:-----------------------------------------------------:|
 
 
 
@@ -89,6 +94,7 @@ Dload  Upload   Total   Spent    Left  Speed
 100   181    0    68  100   113    102    170 --:--:-- --:--:-- --:--:--   273{"id":1,"login":"administrator","fullName":"Admin A","role":"ADMIN"}
 ```
 
+
 <h3 id="post-auth-detail">POST /auth/login</h3>
 
 **REQUEST**
@@ -107,6 +113,7 @@ Dload  Upload   Total   Spent    Left  Speed
 Dload  Upload   Total   Spent    Left  Speed
 100   261    0   196  100    65   1625    539 --:--:-- --:--:-- --:--:--  2175{"token":"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzQ1OTMxNjgxLCJleHAiOjE3NDU5MzUyODF9.VgrYLaaHYQK76vDTsF7MAqYM2qatesM5nluL5Gk_72uWjiF5MXuv92yrcOIIfQLeugobQZ-NdEFTO2AhL6g6wQ"}
 ```
+
 
 <h3 id="post-create-draw">POST /api/draws/admin</h3>
 
@@ -129,6 +136,7 @@ Dload  Upload   Total   Spent    Left  Speed
 100   210    0    98  100   112   1485   1698 --:--:-- --:--:-- --:--:--  3230{"id":1,"lotteryType":"AUTO","startTime":"2025-04-29T16:05:00","finishTime":"2025-05-01T20:00:00"}
 ```
 
+
 <h3 id="get-active-draw">GET /api/draws/active</h3>
 
 **REQUEST**
@@ -142,6 +150,7 @@ curl -X GET "http://localhost:8080/api/draws/active"
 Dload  Upload   Total   Spent    Left  Speed
 100   118    0   118    0     0   4614      0 --:--:-- --:--:-- --:--:--  4538[{"id":1,"lotteryType":"AUTO","startTime":"2025-04-29T16:05:00","finishTime":"2025-05-01T20:00:00","status":"ACTIVE"}]
 ```
+
 
 <h3 id="put-cancel-draw">PUT /api/draws/{Id}/cancel/admin</h3>
 
