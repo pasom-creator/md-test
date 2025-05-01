@@ -80,8 +80,10 @@ docker-compose up -d
 | POST /api/invoice| Создать инвойс [пример команды](#post-create-invoice)
 | POST /api/payments| Оплатить покупку билета [пример команды](#post-buy-ticket)
 | POST /api/exports/winnings| Начислить выигрыш (доступна роли ADMIN) [пример команды](#post-credit-winnings)
-| GET /api/exports/draw-statistics| Получить статистику тиражей (доступна роли ADMIN) [пример команды](#get-draw-stat)
-||
+| GET /api/exports/draw-statistics| Получить статистику тиражей по датам (доступна роли ADMIN) [пример команды](#get-draw-stat)
+| GET /api/exports/user-statistics| Получить статистику пользователей по датам (доступна роли ADMIN) [пример команды](#get-user-stat)
+| GET /api/exports/winners/draws/{id}| Получить данные о выигрышных билетах по id тиража (доступна роли ADMIN) [пример команды](#get-winning-tickets)
+| GET /api/exports/winning-statistics| Получить статистику выигрышей (доступна роли ADMIN) [пример команды](#get-winning-stat)
 
 
 <h3 id="post-registration">Создание пользователя с ролью ADMIN или USER</h3>
@@ -352,5 +354,62 @@ curl -X GET http://localhost:8080/api/tickets/3/check-result -H "Authorization: 
 % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 Dload  Upload   Total   Spent    Left  Speed
 100    69    0    69    0     0   3125      0 --:--:-- --:--:-- --:--:--  3136{"id":3,"userId":4,"drawId":2,"data":"45 88 82 16 18","status":"WIN"}
+```
+<br/><br/>
+
+<h3 id="get-user-stat">Получить статистику пользователей</h3>
+
+**REQUEST**
+```bash
+curl -X GET "http://localhost:8080/api/exports/user-statistics" \
+ -H "Content-Type: application/json" \
+ -H "Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzQ2MTI3NDQ5LCJleHAiOjE3NDYxMzEwNDl9.t6GnYoSpFHVbuaqcZeiLbz_yJICK1tYjO5kj-IcqpX7HXCeCGc_x7udMPRLb_w7r1GwfX5c-wopSzeK3q9zc9g" \
+-d '{
+    "fromDate": "2025-04-26T23:51:00",
+    "toDate": "2025-05-01T13:50:00"
+}'
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100   155    0    77  100    78   3479   3524 --:--:-- --:--:-- --:--:--  7045{"statistics":[{"userId":4,"totalWinnings":5000.00,"winningTicketsCount":2}]}
+```
+<br/><br/>
+
+<h3 id="get-winning-tickets">Получить данные о выигрышных билетах в тираже</h3>
+
+**REQUEST**
+```bash
+curl -X GET "http://localhost:8080/api/exports/winners/draws/3" -H "Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzQ2MTI3NDQ5LCJleHAiOjE3NDYxMzEwNDl9.t6GnYoSpFHVbuaqcZeiLbz_yJICK1tYjO5kj-IcqpX7HXCeCGc_x7udMPRLb_w7r1GwfX5c-wopSzeK3q9zc9g"
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100    94    0    94    0     0   3353      0 --:--:-- --:--:-- --:--:--  3481{"drawId":3,"winningCombination":"83 57 46 73 58","winners":[{"ticketId":4,"amount":2000.00}]}
+```
+<br/><br/>
+
+<h3 id="get-winning-stat">Получить статистику выигрышей</h3>
+
+**REQUEST**
+```bash
+$ curl -X GET "http://localhost:8080/api/exports/winning-statistics" \
+ -H "Content-Type: application/json" \
+ -H "Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzQ2MTI3NDQ5LCJleHAiOjE3NDYxMzEwNDl9.t6GnYoSpFHVbuaqcZeiLbz_yJICK1tYjO5kj-IcqpX7HXCeCGc_x7udMPRLb_w7r1GwfX5c-wopSzeK3q9zc9g" \
+-d '{
+    "fromDate": "2025-04-28T23:51:00",
+    "toDate": "2025-04-30T19:00:00"
+}'
+```
+
+**RESPONSE**
+```bash
+% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+Dload  Upload   Total   Spent    Left  Speed
+100   120    0    42  100    78    829   1541 --:--:-- --:--:-- --:--:--  2400{"numberWinnings":1,"totalAmount":3000.00}
 ```
 <br/><br/>
